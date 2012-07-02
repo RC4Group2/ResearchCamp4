@@ -42,8 +42,12 @@ def main():
             transitions={'succeeded':'MOVE_TO_GRASP_POSE'})
         
         smach.StateMachine.add('MOVE_TO_GRASP_POSE', approach_pose(),
-            transitions={'succeeded':'SM_GRASP_OBJECT', 
+            transitions={'succeeded':'ADJUST_POSE', 
                         'failed':'overall_failed'})
+
+	smach.StateMachine.add('ADJUST_POSE', adjust_pose_wrt_platform(),
+            transitions={'succeeded':'SM_GRASP_OBJECT',
+			'failed':'ADJUST_POSE'})
                       
         smach.StateMachine.add('SM_GRASP_OBJECT', sm_grasp_random_object(),
             transitions={'object_grasped':'PLACE_OBJECT_ON_REAR_PLATFORM', 

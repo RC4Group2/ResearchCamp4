@@ -7,6 +7,7 @@
 		<machine name="pc1" address="youbot-hbrs2-pc1" default="true"/>
 		<!-- navigation -->
 		<include file="$(find raw_2dnav)/ros/launch/2dnav.launch" />
+		<include file="$(find raw_base_placement)/launch/basescan_regression.launch" />
 
 		<!-- script server -->
 		<include file="$(find raw_script_server)/launch/script_server.launch" />

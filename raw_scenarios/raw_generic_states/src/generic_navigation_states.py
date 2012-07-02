@@ -5,7 +5,7 @@ import rospy
 import smach
 import smach_ros
 import actionlib
-import raw_base_placement_to_platform_in_front.msg
+import raw_base_placement.msg
 import raw_srvs.srv
 
 from simple_script_server import *
@@ -45,12 +45,12 @@ class adjust_pose_wrt_platform(smach.State):
         smach.State.__init__(self, outcomes=['succeeded', 'failed'])
 
     def execute(self, userdata):
-        ac_base_adj = actionlib.SimpleActionClient('/scan_front_orientation', raw_base_placement_to_platform_in_front.msg.OrientToBaseAction)
+        ac_base_adj = actionlib.SimpleActionClient('/scan_front_orientation', raw_base_placement.msg.OrientToBaseAction)
             
         rospy.loginfo("Waiting for action server <</scan_front_orientation>> to start ...");
         ac_base_adj.wait_for_server()
         rospy.loginfo("action server <</scan_front_orientation>> is ready ...");
-        action_goal = raw_base_placement_to_platform_in_front.msg.OrientToBaseActionGoal()
+        action_goal = raw_base_placement.msg.OrientToBaseActionGoal()
             
         action_goal.goal.distance = 0.02;
         rospy.loginfo("send action");
