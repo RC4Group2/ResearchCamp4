@@ -52,7 +52,7 @@ class adjust_pose_wrt_platform(smach.State):
         rospy.loginfo("action server <</scan_front_orientation>> is ready ...");
         action_goal = raw_base_placement.msg.OrientToBaseActionGoal()
             
-        action_goal.goal.distance = 0.02;
+        action_goal.goal.distance = 0.05;
         rospy.loginfo("send action");
         ac_base_adj.send_goal(action_goal.goal);
         
