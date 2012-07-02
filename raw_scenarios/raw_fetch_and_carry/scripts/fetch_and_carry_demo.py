@@ -54,8 +54,14 @@ def main():
                          'failed':'SM_GRASP_OBJECT'})
                                 
         smach.StateMachine.add('PLACE_OBJECT_ON_REAR_PLATFORM', place_obj_on_rear_platform(),
-            transitions={'succeeded':'SELECT_POSE_TO_APPROACH', 
+            transitions={'succeeded':'MOVE_BACK_FIXED_DISTANCE', 
                         'failed':'overall_failed'})
+
+        smach.StateMachine.add('MOVE_BACK_FIXED_DISTANCE', move_base_rel(-0.3),
+            transitions={'succeeded':'SELECT_POSE_TO_APPROACH'})
+
+
+
               
             
     # Start SMACH viewer

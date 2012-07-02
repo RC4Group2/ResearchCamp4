@@ -66,4 +66,32 @@ class adjust_pose_wrt_platform(smach.State):
             rospy.logerr("Action did not finish before the time out!")
             return 'failed'
         
+
+class move_base_rel(smach.State):
+
+    def __init__(self, x_distance):
+        smach.State.__init__(self, outcomes=['succeeded'])
+        
+        self.x_distance = x_distance
+        self.shiftbase_srv = rospy.ServiceProxy('/raw_relative_movements/shiftbase', raw_srvs.srv.SetPoseStamped) 
+
+    def execute(self, userdata):
+        
+        print "wait for service: /raw_relative_movements/shiftbase"   
+        rospy.wait_for_service('/raw_relative_movements/shiftbase', 30)
+
+        goalpose = geometry_msgs.msg.PoseStamped()
+        goalpose.pose.position.x = self.x_distance
+        goalpose.pose.position.y = 0.0
+        goalpose.pose.position.z = 0.2 #speed
+        quat = tf.transformations.quaternion_from_euler(0,0,0)
+        goalpose.pose.orientation.x = quat[0]
+        goalpose.pose.orientation.y = quat[1]
+        goalpose.pose.orientation.z = quat[2]
+        goalpose.pose.orientation.w = quat[3]
+        
+        # call base placement service
+        self.shiftbase_srv(goalpose)  
+        
+        return 'succeeded'
             
