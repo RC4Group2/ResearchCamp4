@@ -21,7 +21,7 @@ class grasp_random_object(smach.State):
         
         for object in userdata.object_list:         
             # ToDo: need to be adjusted to correct stuff           
-            if object.pose.pose.position.z <= 0.05 and object.pose.pose.position.z >= 0.30:
+            if object.pose.pose.position.z <= 0.05 or object.pose.pose.position.z >= 0.30:
                 continue
                         
             handle_arm = sss.move("arm", [object.pose.pose.position.x, object.pose.pose.position.y, object.pose.pose.position.z, 0, ((math.pi/2) + (math.pi/4)), 0, "/base_link"])
