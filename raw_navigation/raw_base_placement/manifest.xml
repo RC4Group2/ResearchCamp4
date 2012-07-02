@@ -1,13 +1,13 @@
 <package>
-  <description brief="raw_base_placement_to_platform_in_front">
+  <description brief="raw_base_placement">
 
-     raw_base_placement_to_platform_in_front
+     raw_base_placement
 
   </description>
   <author>Matthias Fueller</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/raw_base_placement_to_platform_in_front</url>
+  <url>http://ros.org/wiki/raw_base_placement</url>
 
   <depend package="roscpp"/>
   <depend package="sensor_msgs"/>
