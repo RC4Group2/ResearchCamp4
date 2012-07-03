@@ -4,7 +4,9 @@ import rospy
 
 import smach
 import smach_ros
-import time
+
+from simple_script_server import *
+sss = simple_script_server()
 
 class move_to_area(smach.State):
     def __init__(self):
@@ -14,11 +16,45 @@ class move_to_area(smach.State):
 
     def execute(self, userdata):
 	targetidx = userdata.area_to_approach
-        targetcoo = userdata.areas[userdata.area_to_approach]
-        rospy.loginfo("approaching area idx %d coo %f %f %f", (targetidx, targetcoo[0], targetcoo[1], targetcoo[2]))
-	# find first marker
-	# follow marker vector
-	# move to target position
+        premarkerspec = userdata.areas[userdata.area_to_approach]['premarker']
+        finalposspec = userdata.areas[userdata.area_to_approach]['finalpos']
+        rospy.loginfo("approaching area idx %d premarker spec %s finalpos spec %s", targetidx, repr(premarkerspec), repr(finalposspec))
+	# goto expected location of first marker
+	handle_base = sss.move("base", premarkerspec)
+	while True:                
+	    rospy.sleep(0.1)
+	    base_state = handle_base.get_state()
+	    if (base_state == actionlib.simple_action_client.GoalStatus.SUCCEEDED):
+		break
+	    elif (base_state == actionlib.simple_action_client.GoalStatus.ACTIVE):
+		continue
+	    else:
+		print 'last state: ',base_state
+		return "failed"
+	# instruct marker based navigation to follow marker vector
+	handle_base = sss.move("markers", targetidx)
+	while True:                
+	    rospy.sleep(0.1)
+	    base_state = handle_base.get_state()
+	    if (base_state == actionlib.simple_action_client.GoalStatus.SUCCEEDED):
+		break
+	    elif (base_state == actionlib.simple_action_client.GoalStatus.ACTIVE):
+		continue
+	    else:
+		print 'last state: ',base_state
+		return "failed"
+	# move to final target position
+	handle_base = sss.move("base", finalposspec)
+	while True:                
+	    rospy.sleep(0.1)
+	    base_state = handle_base.get_state()
+	    if (base_state == actionlib.simple_action_client.GoalStatus.SUCCEEDED):
+		break
+	    elif (base_state == actionlib.simple_action_client.GoalStatus.ACTIVE):
+		continue
+	    else:
+		print 'last state: ',base_state
+		return "failed"
         return 'succeeded'
 
 class find_new_goal(smach.State):
@@ -41,5 +77,5 @@ class wait(smach.State):
             input_keys=['waittime'])
 
     def execute(self, userdata):
-	time.sleep(userdata.waittime)
+	rospy.sleep(userdata.waittime)
         return 'succeeded'

@@ -25,11 +25,14 @@ def main():
     SM = smach.StateMachine(outcomes=['overall_failed'])
     
     # world knowledge
-    SM.userdata.waittime = 2
+    SM.userdata.waittime = 2.0
     SM.userdata.area_to_approach = 0; 
-			# x, y, z
-    SM.userdata.areas = [[0.033 + 0.024 - 0.32, 0, 0.14],
-			 [0.033 + 0.024 - 0.235, 0, 0.14]];
+			# todo get all these positions from map
+			# x, y, z?
+    SM.userdata.areas = [{'premarker': [0.033 + 0.024 - 0.32, 0, 0.14],
+                          'finalpos':[0.033 + 0.024 - 0.250, 0, 0.14]},
+                         {'premarker': [0.033 + 0.024 - 0.220, 0, 0.14],
+                          'finalpos':[0.033 + 0.024 - 0.235, 0, 0.14]}]
                                             # x, y, z, roll, pitch, yaw
     #SM.userdata.rear_platform_free_poses = [[0.033 + 0.024 - 0.32,  0.0, 0.14, 0, -math.pi + 0.2, 0, "/arm_link_0"],   #front pos
     #                                        [0.033 + 0.024 - 0.28,  0.0, 0.14, 0, -math.pi + 0.3, 0, "/arm_link_0"],    #rear pos
