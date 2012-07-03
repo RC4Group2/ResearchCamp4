@@ -4,25 +4,42 @@ import rospy
 
 import smach
 import smach_ros
+import time
 
-class select_pose_to_approach(smach.State):
+class move_to_area(smach.State):
     def __init__(self):
         smach.State.__init__(self, 
             outcomes=['succeeded'],
-            input_keys=['base_pose_list', 'base_pose_to_approach'],
-            output_keys=['base_pose_list', 'base_pose_to_approach'])
+            input_keys=['area_to_approach', 'areas'])
 
     def execute(self, userdata):
-        if(userdata.base_pose_to_approach == -1):
-            userdata.base_pose_to_approach = userdata.base_pose_list[0]
-        else:
-            count = 0
-            for item in userdata.base_pose_list:
-                if userdata.base_pose_to_approach == item:
-                    userdata.base_pose_to_approach = userdata.base_pose_list[((count+1) % len(userdata.base_pose_list))]
-                    break;
-                count = count + 1 
-        
-        rospy.loginfo("selected pose: %s", userdata.base_pose_to_approach)
-                
+	targetidx = userdata.area_to_approach
+        targetcoo = userdata.areas[userdata.area_to_approach]
+        rospy.loginfo("approaching area idx %d coo %f %f %f", (targetidx, targetcoo[0], targetcoo[1], targetcoo[2]))
+	# find first marker
+	# follow marker vector
+	# move to target position
+        return 'succeeded'
+
+class find_new_goal(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+	    outcomes=['succeeded','failed'],
+            input_keys=['area_to_approach'],
+            output_keys=['area_to_approach'])
+
+    def execute(self, userdata):
+	# just switch between area with idx 0 and idx 1
+        userdata.area_to_approach = 1 - userdata.area_to_approach
+        rospy.loginfo("next area to approach has index %d", userdata.area_to_approach)
+        return 'succeeded'
+
+class wait(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+            outcomes=['succeeded'],
+            input_keys=['waittime'])
+
+    def execute(self, userdata):
+	time.sleep(userdata.waittime)
         return 'succeeded'

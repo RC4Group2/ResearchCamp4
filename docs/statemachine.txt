@@ -20,3 +20,5 @@ state machine states:
 new:
 	ResearchCamp4/raw_mbn_scenarios/raw_mbn_movebackforth/src/boss_states.py
 
+
+why is some stuff in scripts/*.py and other stuff in src/*.py ?
