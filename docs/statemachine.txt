@@ -1,9 +1,22 @@
 init main state machine:
 	ResearchCamp4/raw_scenarios/raw_fetch_and_carry/scripts/fetch_and_carry_demo.py
+		-> change substantially
 state machine states:
-	ResearchCamp4/raw_scenarios/raw_fetch_and_carry/src/fetch_and_carry_demo_states.py
 	ResearchCamp4/raw_scenarios/raw_generic_states/src/generic_basic_states.py
+		class init_state -> why is it generic to init arm to fixed named position and open gripper?
+		(-> ignore)
 	ResearchCamp4/raw_scenarios/raw_generic_states/src/generic_manipulation_states.py
-	ResearchCamp4/raw_scenarios/raw_generic_states/src/generic_navigation_states.py
+		(-> ignore)
 	ResearchCamp4/raw_scenarios/raw_generic_states/src/generic_perception_states.py
+		(-> ignore)
 	ResearchCamp4/raw_scenarios/raw_generic_states/src/generic_state_machines.py
+		class grasp_random_object -> useless filename
+		(-> ignore)
+	ResearchCamp4/raw_scenarios/raw_fetch_and_carry/src/fetch_and_carry_demo_states.py
+		-> reuse
+	ResearchCamp4/raw_scenarios/raw_generic_states/src/generic_navigation_states.py
+		-> reuse but put into separate directory
+
+new:
+	ResearchCamp4/raw_mbn_scenarios/raw_mbn_movebackforth/src/boss_states.py
+
