@@ -1,0 +1,9 @@
+init main state machine:
+	ResearchCamp4/raw_scenarios/raw_fetch_and_carry/scripts/fetch_and_carry_demo.py
+state machine states:
+	ResearchCamp4/raw_scenarios/raw_fetch_and_carry/src/fetch_and_carry_demo_states.py
+	ResearchCamp4/raw_scenarios/raw_generic_states/src/generic_basic_states.py
+	ResearchCamp4/raw_scenarios/raw_generic_states/src/generic_manipulation_states.py
+	ResearchCamp4/raw_scenarios/raw_generic_states/src/generic_navigation_states.py
+	ResearchCamp4/raw_scenarios/raw_generic_states/src/generic_perception_states.py
+	ResearchCamp4/raw_scenarios/raw_generic_states/src/generic_state_machines.py
