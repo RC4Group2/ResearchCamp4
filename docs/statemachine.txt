@@ -24,6 +24,5 @@ new:
 why is some stuff in scripts/*.py and other stuff in src/*.py?
 why is the simple script server (sss) global in some state class definition?
 is the polling loop the only way to wait for an action to succeed?
-how to represent "target to move to before starting marker based navigation"?
 is a pose some standard concept to give to "move"/"move_base"?
 how to send to marker based navigation vs move_base ... handle_base = sss.move("markers", targetidx) ?
