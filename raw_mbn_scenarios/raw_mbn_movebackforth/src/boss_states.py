@@ -8,6 +8,7 @@ import smach_ros
 #from simple_script_server import *
 #sss = simple_script_server()
 
+import actionlib
 from move_base_msgs.msg import *
 
 
@@ -38,12 +39,12 @@ class move_to_area(smach.State):
     def execute(self, userdata):
 		targetidx = userdata.area_to_approach
 
-      markerchain_name = userdata.areas[userdata.area_to_approach]['markerchain']
+		markerchain_name = userdata.areas[userdata.area_to_approach]['markerchain']
 
 		# TODO get pose (abs location) of first marker in marker chain into variable 'premarkerpose'
-      finalpose = userdata.areas[userdata.area_to_approach]['finalpose']
+		finalpose = userdata.areas[userdata.area_to_approach]['finalpose']
 
-      rospy.loginfo("approaching area idx %d premarkerpose %s finalpose %s", targetidx, repr(premarkerpose), repr(finalpose))
+		rospy.loginfo("approaching area idx %d premarkerpose %s finalpose %s", targetidx, repr(premarkerpose), repr(finalpose))
 
 		# goto location of first marker (premarkerpose)
 		cmdresult = command_move_base_blocking(premarkerpose)
@@ -58,9 +59,9 @@ class move_to_area(smach.State):
 		if cmdresult == 'failed':
 			return 'failed'
 
-	  return 'succeeded'
+		return 'succeeded'
 
-	def command_move_base_blocking(goal_pose):
+    def command_move_base_blocking(goal_pose):
 		goal_msg = MoveBaseGoal()
 		goal_msg.target_pose = goal_pose
 		self.move_base_client.send_goal(goal_msg)
@@ -81,7 +82,7 @@ class move_to_area(smach.State):
 			 print "move base controller returned %r" % (controller_state)
 			 return 'failed'
 
-	def command_mbn_blocking(markerchainname):
+    def command_mbn_blocking(markerchainname):
 		goal_msg = MoveBaseGoal() #TODO
 		goal_msg.target_pose = goal_pose #TODO
 		self.mbn_client.send_goal(goal_msg)
@@ -102,7 +103,7 @@ class move_to_area(smach.State):
 			 print "mbn controller returned %r" % (controller_state)
 			 return 'failed'
 
-	def getMarkerData(self, markerid):
+    def getMarkerData(self, markerid):
 		rospy.wait_for_service('marker_data')
 
 		try:
