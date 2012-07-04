@@ -102,6 +102,16 @@ class move_to_area(smach.State):
 			 print "mbn controller returned %r" % (controller_state)
 			 return 'failed'
 
+	def getMarkerData(self, markerid):
+		rospy.wait_for_service('marker_data')
+
+		try:
+			markerdataproxy = rospy.ServiceProxy('marker_data', MarkerData)
+			markerdata = markerdataproxy(markerid)
+			return markerdata
+		except rospy.ServiceException, e:
+			print "Failed to get MarkerData for %s because of %s" % (markerid,e)
+
 class find_new_goal(smach.State):
     def __init__(self):
         smach.State.__init__(self,
