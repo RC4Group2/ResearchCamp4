@@ -11,6 +11,8 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()
 
+rosbuild_find_ros_package(robot_srvs)
+
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
@@ -21,26 +23,15 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
-
 include_directories(
-${PROJECT_SOURCE_DIR}/ros/include
+	${PROJECT_SOURCE_DIR}/include
 )
 
-rosbuild_add_library(raw_toolbox_ros ros/src/toolbox_ros.cpp)
-rosbuild_add_library(raw_plane_extraction ros/src/plane_extraction.cpp)
-rosbuild_add_library(raw_object_candidate_extraction ros/src/object_candidate_extraction.cpp)
-
-rosbuild_add_executable(object_segmentation_node
-	ros/src/nodes/object_segmentation_node.cpp
-	ros/src/object_segmentation.cpp
-	ros/src/roi_extraction.cpp
-)
-target_link_libraries(object_segmentation_node
-	raw_toolbox_ros
-	raw_plane_extraction
-	raw_object_candidate_extraction
-)
-
-target_link_libraries(raw_object_candidate_extraction
-	raw_plane_extraction
-)
+#common commands for building c++ executables and libraries
+#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
+#target_link_libraries(${PROJECT_NAME} another_library)
+#rosbuild_add_boost_directories()
+#rosbuild_link_boost(${PROJECT_NAME} thread)
+#rosbuild_add_executable(example examples/example.cpp)
+rosbuild_add_executable(base_controller src/relative_movements.cpp src/HomogenousTransform.cpp)
+#target_link_libraries(example ${PROJECT_NAME})

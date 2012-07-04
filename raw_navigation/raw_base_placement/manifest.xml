@@ -1,0 +1,19 @@
+<package>
+  <description brief="raw_base_placement">
+
+     raw_base_placement
+
+  </description>
+  <author>Matthias Fueller</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/raw_base_placement</url>
+
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <depend package="actionlib"/>
+  <depend package="geometry_msgs"/>
+
+</package>
+
+

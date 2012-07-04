@@ -5,6 +5,8 @@
 
 	<!-- navigation -->
 	<include file="$(find raw_2dnav)/ros/launch/2dnav_sim.launch" />	
+	<include file="$(find raw_base_placement)/launch/basescan_regression.launch" />
+	<include file="$(find raw_relative_movements)/launch/base_controller.launch" />
 
 	<!-- manipulation -->
 	<include file="$(find raw_arm_navigation)/ros/launch/simple_manipulation.launch" />	
