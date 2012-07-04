@@ -13,6 +13,18 @@ from generic_basic_states import *
 # scenario specific states
 from boss_states import *
 
+def preparePose(x,y,theta):
+  goal_pose = PoseStamped()
+  # TODO: this should get the frame from the input marker message...
+  goal_pose.header.frame_id = "/map"
+  goal_pose.header.stamp = rospy.Time.now()
+  goal_pt = Point(x,y,theta)
+  goal_pose.pose.position = goal_pt
+  # TODO: this should be aligned with the april tag pose!
+  qq = tf.transformations.quaternion_from_euler(0, 0, 0.0)
+  goal_pose.pose.orientation = Quaternion(*qq)
+  return goal_pose
+
 # main
 def main():
     rospy.init_node('movebackforth')
@@ -30,9 +42,9 @@ def main():
 			# name of marker
 		        # x, y, z, roll, pitch, yaw
     SM.userdata.areas = [{'markerchain': 'marker4711',
-                          'finalpose':[0.033 + 0.024 - 0.32, 0.0, 0.14, 0, -math.pi + 0.3, 0, "/arm_link_0"]},
+                          'finalpose': preparePose(0.03, 0.4, 0)},
                          {'markerchain': 'marker4712',
-                          'finalpose':[0.033 + 0.024 - 0.235, 0.0, 0.14, 0, -math.pi + 0.3, 0, "/arm_link_0"]}]
+                          'finalpose': preparePose(0.05, 0.3, 0)}]
     
     # open the container
     with SM:
