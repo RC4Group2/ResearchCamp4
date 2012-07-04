@@ -16,11 +16,16 @@ class move_to_area(smach.State):
 
     def execute(self, userdata):
 	targetidx = userdata.area_to_approach
-        premarkerspec = userdata.areas[userdata.area_to_approach]['premarker']
-        finalposspec = userdata.areas[userdata.area_to_approach]['finalpos']
-        rospy.loginfo("approaching area idx %d premarker spec %s finalpos spec %s", targetidx, repr(premarkerspec), repr(finalposspec))
-	# goto expected location of first marker
-	handle_base = sss.move("base", premarkerspec)
+
+        markerchain_name = userdata.areas[userdata.area_to_approach]['markerchain']
+
+	# TODO get pose (abs location) of first marker in marker chain into variable 'premarkerpose'
+        finalpose = userdata.areas[userdata.area_to_approach]['finalpose']
+
+        rospy.loginfo("approaching area idx %d premarkerpose %s finalpose %s", targetidx, repr(premarkerpose), repr(finalpose))
+
+	# goto location of first marker (premarkerpose)
+	handle_base = sss.move("base", premarkerpose)
 	while True:                
 	    rospy.sleep(0.1)
 	    base_state = handle_base.get_state()
@@ -31,8 +36,9 @@ class move_to_area(smach.State):
 	    else:
 		print 'last state: ',base_state
 		return "failed"
-	# instruct marker based navigation to follow marker vector
-	handle_base = sss.move("markers", targetidx)
+
+	# instruct marker based navigation to follow marker chain of specified name
+	handle_base = sss.move("markers", markerchain_name)
 	while True:                
 	    rospy.sleep(0.1)
 	    base_state = handle_base.get_state()
@@ -43,8 +49,9 @@ class move_to_area(smach.State):
 	    else:
 		print 'last state: ',base_state
 		return "failed"
-	# move to final target position
-	handle_base = sss.move("base", finalposspec)
+
+	# move to target position in arena (finalpose)
+	handle_base = sss.move("base", finalpose)
 	while True:                
 	    rospy.sleep(0.1)
 	    base_state = handle_base.get_state()
