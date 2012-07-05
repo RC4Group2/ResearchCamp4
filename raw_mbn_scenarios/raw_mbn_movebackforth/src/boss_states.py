@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import roslib; roslib.load_manifest('raw_fetch_and_carry')
+import roslib; roslib.load_manifest('raw_mbn_movebackforth')
 import rospy
 
 import smach
@@ -10,21 +10,6 @@ import smach_ros
 
 import actionlib
 from move_base_msgs.msg import *
-
-
-'''
-how to prepare pose for command_move_base_blocking
-
-goal_pose = PoseStamped()
-# TODO: this should get the frame from the input marker message...
-goal_pose.header.frame_id = "/map"
-goal_pose.header.stamp = rospy.Time.now()
-goal_pt = Point(userdata.tag_location[0], userdata.tag_location[1], 0.0)
-goal_pose.pose.position = goal_pt
-# TODO: this should be aligned with the april tag pose!
-qq = tf.transformations.quaternion_from_euler(0, 0, 0.0)
-goal_pose.pose.orientation = Quaternion(*qq)
-'''
 
 class move_to_area(smach.State):
     def __init__(self):
