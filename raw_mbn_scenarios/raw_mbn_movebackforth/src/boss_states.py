@@ -8,18 +8,59 @@ import smach_ros
 #from simple_script_server import *
 #sss = simple_script_server()
 
+from actionlib_msgs.msg import GoalStatus
+from geometry_msgs.msg import Quaternion, PoseStamped, Point
+from sensor_msgs.msg import Joy
+
 import actionlib
 from move_base_msgs.msg import *
+
+from marker_server.srv import *
+
+def preparePoseQ(x,y,quart):
+  goal_pose = PoseStamped()
+  # TODO: this should get the frame from the input marker message...
+  goal_pose.header.frame_id = "/map"
+  goal_pose.header.stamp = rospy.Time.now()
+  goal_pt = Point(x,y,0)
+  goal_pose.pose.position = goal_pt
+  goal_pose.pose.orientation = quart
+  return goal_pose
+
+class cb:
+	def __init__(self):
+		self.notified = False
+	def reset(self):
+		self.notified = False
+	def call(self,message):
+		#print "joy cb got notified %s" % (message,)
+		if message.buttons[2] == 1:
+			self.notified = True
+	def notified(self):
+		return self.notified
+
 
 class move_to_area(smach.State):
   def __init__(self):
 		smach.State.__init__(self, 
-			outcomes=['succeeded'],
+			outcomes=['succeeded','failed'],
 			input_keys=['area_to_approach', 'areas'])
+		print "init move_to_area"
 		self.move_base_client = actionlib.SimpleActionClient("move_base", MoveBaseAction)
 		self.move_base_client.wait_for_server()
-		self.mbn_client = actionlib.SimpleActionClient("markerbasednav TODO", MoveBaseAction) # TODO TODO MoveBaseAction
-		self.mbn_client.wait_for_server()
+
+		print "waiting"
+		rospy.wait_for_service('/marker_server/marker_data')
+		rospy.wait_for_service('/marker_server/list_marker')
+		print "got services"
+		self.markerdataproxy = rospy.ServiceProxy('/marker_server/marker_data', MarkerData)
+		self.markerchainproxy = rospy.ServiceProxy('/marker_server/list_marker', MarkerList)
+		#self.mbn_client = actionlib.SimpleActionClient("markerbasednav TODO", MoveBaseAction) # TODO TODO MoveBaseAction
+		#self.mbn_client.wait_for_server()
+		print "initialized move_to_area"
+
+		self.cb = cb()
+		self.joy = rospy.Subscriber('/joy',Joy,callback=self.cb.call)
 
   def execute(self, userdata):
 		targetidx = userdata.area_to_approach
@@ -27,29 +68,35 @@ class move_to_area(smach.State):
 		markerchain_name = userdata.areas[userdata.area_to_approach]['markerchain']
 
 		# get pose (abs location) of first marker in marker chain into variable 'premarkerpose'
-		markerdata = self.getMarkerData(markerchain_name)
-    premarkerpos_ref_frame_id = markerdata.pos_ref_frame_id
-    premarkerpose = markerdata.pose
-    finalpose = userdata.areas[userdata.area_to_approach]['finalpose']
-
-    rospy.loginfo("approaching area idx %d premarker %s %s finalpose %s" % (targetidx,premarkerpos_ref_frame_id,premarkerpose,finalpose))
+		print "getting marker chain with name %s" % (markerchain_name,)
+		markerchain = self.getMarkerChain(markerchain_name)
+		#print "got marker chain data '%s'" % (repr(markerchain),)
+		firstmarker = self.getMarkerData(markerchain.list.markersIDs[0])
+		print "got marker data '%s'" % (firstmarker,)
+		premarkerpose = preparePoseQ(firstmarker.pose.position.x, firstmarker.pose.position.y, firstmarker.pose.orientation)
+		print "got premarkerpose '%s'" % (premarkerpose,)
+		finalpose = userdata.areas[userdata.area_to_approach]['finalpose']
+		
+		rospy.loginfo("approaching area idx %d premarker %s finalpose %s" % (targetidx,premarkerpose,finalpose))
 
 		# goto location of first marker (premarkerpose)
-		cmdresult = command_move_base_blocking(premarkerpose)
+		cmdresult = self.command_move_base_blocking(premarkerpose)
 		if cmdresult == 'failed':
 			return 'failed'
 
-		cmdresult = command_mbn_blocking(markerchain_name)
-		if cmdresult == 'failed':
-			return 'failed'
+		print "waiting for joy"
+		self.cb.reset
+		while not self.cb.notified:
+			rospy.sleep(0.1)
+		print "joy!"
 
-		cmdresult = command_move_base_blocking(finalpose)
+		cmdresult = self.command_move_base_blocking(finalpose)
 		if cmdresult == 'failed':
 			return 'failed'
 
 		return 'succeeded'
 
-    def command_move_base_blocking(goal_pose):
+  def command_move_base_blocking(self,goal_pose):
 		goal_msg = MoveBaseGoal()
 		goal_msg.target_pose = goal_pose
 		self.move_base_client.send_goal(goal_msg)
@@ -70,36 +117,21 @@ class move_to_area(smach.State):
 			 print "move base controller returned %r" % (controller_state)
 			 return 'failed'
 
-    def command_mbn_blocking(markerchainname):
-		goal_msg = MoveBaseGoal() #TODO
-		goal_msg.target_pose = goal_pose #TODO
-		self.mbn_client.send_goal(goal_msg)
-		goal_status = self.mbn_client.get_state()
-		self.mbn_client.wait_for_result()
-		print "got mbn controller result!"
-
-		controller_state = self.mbn_client.get_state()
-		if controller_state == GoalStatus.PREEMPTED:
-			 return 'failed'
-		elif controller_state == GoalStatus.ABORTED:
-			 print "mbn controller call aborted!"
-			 return 'failed'
-		elif controller_state == GoalStatus.SUCCEEDED:
-			 print "mbn controller call succeeded!"
-			 return 'succeeded'
-		else:
-			 print "mbn controller returned %r" % (controller_state)
-			 return 'failed'
-
-    def getMarkerData(self, markerid):
-		rospy.wait_for_service('marker_data')
-
+  def getMarkerData(self, markerid):
 		try:
-			markerdataproxy = rospy.ServiceProxy('marker_data', MarkerData)
-			markerdata = markerdataproxy(markerid)
+			markerdata = self.markerdataproxy(markerid)
+			print "got markerdata %s" % (markerdata,)
 			return markerdata
 		except rospy.ServiceException, e:
 			print "Failed to get MarkerData for %s because of %s" % (markerid,e)
+
+  def getMarkerChain(self, markerchain):
+		try:
+			markerchaindata = self.markerchainproxy(markerchain)
+			print "got markerchaindata %s" % (markerchaindata,)
+			return markerchaindata
+		except rospy.ServiceException, e:
+			print "Failed to get MarkerChainData for %s because of %s" % (markerchain,e)
 
 class find_new_goal(smach.State):
     def __init__(self):

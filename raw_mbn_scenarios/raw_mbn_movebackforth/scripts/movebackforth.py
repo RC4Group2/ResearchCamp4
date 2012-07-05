@@ -10,6 +10,8 @@ from generic_basic_states import *
 #from generic_navigation_states import *
 #from generic_state_machines import *
 
+from geometry_msgs.msg import Quaternion, PoseStamped, Point
+
 # scenario specific states
 from boss_states import *
 
@@ -41,18 +43,18 @@ def main():
     SM.userdata.area_to_approach = 0; 
 			# name of marker
 		        # x, y, z, roll, pitch, yaw
-    SM.userdata.areas = [{'markerchain': 'marker4711',
-                          'finalpose': preparePose(0.03, 0.4, 0)},
-                         {'markerchain': 'marker4712',
+    SM.userdata.areas = [{'markerchain': 'pathA1_A2',
+                          'finalpose': preparePose(0.75, 0.0, 0)},
+                         {'markerchain': 'pathA2_A1',
                           'finalpose': preparePose(0.05, 0.3, 0)}]
     
     # open the container
     with SM:
         # add states to the container
         
-        smach.StateMachine.add('INIT_ROBOT', init_robot(),
-            transitions={'succeeded':'MOVE_TO_AREA', 
-                         'failed':'overall_failed'})
+        #smach.StateMachine.add('INIT_ROBOT', init_robot(),
+        #    transitions={'succeeded':'MOVE_TO_AREA', 
+        #                 'failed':'overall_failed'})
         
         #smach.StateMachine.add('MOVE_TO_AREA', MoveSM, 
         smach.StateMachine.add('MOVE_TO_AREA', move_to_area(),
