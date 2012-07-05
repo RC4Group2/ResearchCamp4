@@ -12,7 +12,7 @@ import actionlib
 from move_base_msgs.msg import *
 
 class move_to_area(smach.State):
-    def __init__(self):
+  def __init__(self):
 		smach.State.__init__(self, 
 			outcomes=['succeeded'],
 			input_keys=['area_to_approach', 'areas'])
@@ -21,15 +21,18 @@ class move_to_area(smach.State):
 		self.mbn_client = actionlib.SimpleActionClient("markerbasednav TODO", MoveBaseAction) # TODO TODO MoveBaseAction
 		self.mbn_client.wait_for_server()
 
-    def execute(self, userdata):
+  def execute(self, userdata):
 		targetidx = userdata.area_to_approach
 
 		markerchain_name = userdata.areas[userdata.area_to_approach]['markerchain']
 
-		# TODO get pose (abs location) of first marker in marker chain into variable 'premarkerpose'
-		finalpose = userdata.areas[userdata.area_to_approach]['finalpose']
+		# get pose (abs location) of first marker in marker chain into variable 'premarkerpose'
+		markerdata = self.getMarkerData(markerchain_name)
+    premarkerpos_ref_frame_id = markerdata.pos_ref_frame_id
+    premarkerpose = markerdata.pose
+    finalpose = userdata.areas[userdata.area_to_approach]['finalpose']
 
-		rospy.loginfo("approaching area idx %d premarkerpose %s finalpose %s", targetidx, repr(premarkerpose), repr(finalpose))
+    rospy.loginfo("approaching area idx %d premarker %s %s finalpose %s" % (targetidx,premarkerpos_ref_frame_id,premarkerpose,finalpose))
 
 		# goto location of first marker (premarkerpose)
 		cmdresult = command_move_base_blocking(premarkerpose)
@@ -121,4 +124,4 @@ class wait(smach.State):
 	rospy.sleep(userdata.waittime)
         return 'succeeded'
 
-# vim:ts=3:sw=3:
+# vim:ts=2:sw=2:nolist:noexpandtab:
