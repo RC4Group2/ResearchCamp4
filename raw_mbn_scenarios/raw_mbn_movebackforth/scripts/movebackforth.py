@@ -44,9 +44,9 @@ def main():
 			# name of marker
 		        # x, y, z, roll, pitch, yaw
     SM.userdata.areas = [{'markerchain': 'pathA1_A2',
-                          'finalpose': preparePose(0.75, 0.0, 0)},
+                          'finalpose': preparePose(2.17, -1.49, 0)},
                          {'markerchain': 'pathA2_A1',
-                          'finalpose': preparePose(0.05, 0.3, 0)}]
+                          'finalpose': preparePose(1.34, 2.26, 0)}]
     
     # open the container
     with SM:
