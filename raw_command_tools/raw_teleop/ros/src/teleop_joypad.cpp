@@ -102,6 +102,7 @@ void TeleOpJoypad::cbJoy(const sensor_msgs::Joy::ConstPtr& command)
 	else if((bool)command->buttons[BUTTON_ARM_MOTORS_OFF])
 		turnOnArmMotorsOff();
 
+        /*
 	if((bool)command->buttons[BUTTON_ARM_MOTOR_1_2])
 	{
 		arm_vel_.velocities[0].value = command->axes[AXES_ARM_1] * arm_max_vel_ * speed_factor_;
@@ -114,6 +115,7 @@ void TeleOpJoypad::cbJoy(const sensor_msgs::Joy::ConstPtr& command)
 	}
 	else if((bool)command->buttons[BUTTON_ARM_MOTOR_5])
 		arm_vel_.velocities[4].value = command->axes[AXES_ARM_1] * arm_max_vel_ * speed_factor_;
+        */
 
 }
 
