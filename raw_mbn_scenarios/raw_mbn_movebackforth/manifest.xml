@@ -20,5 +20,6 @@
   <depend package="raw_bringup"/>
   <depend package="raw_bringup_sim"/>
   <depend package="marker_server"/>
+  <depend package="brics_msgs"/>
 
 </package>

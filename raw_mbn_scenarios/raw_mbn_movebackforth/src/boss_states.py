@@ -17,6 +17,8 @@ from move_base_msgs.msg import *
 
 from marker_server.srv import *
 
+from brics_msgs.srv import markerFollower
+
 def preparePoseQ(x,y,quart):
   goal_pose = PoseStamped()
   # TODO: this should get the frame from the input marker message...
@@ -52,9 +54,11 @@ class move_to_area(smach.State):
 		print "waiting"
 		rospy.wait_for_service('/marker_server/marker_data')
 		rospy.wait_for_service('/marker_server/list_marker')
+		rospy.wait_for_service('/run_ar_follower')
 		print "got services"
 		self.markerdataproxy = rospy.ServiceProxy('/marker_server/marker_data', MarkerData)
 		self.markerchainproxy = rospy.ServiceProxy('/marker_server/list_marker', MarkerList)
+		self.arproxy = rospy.ServiceProxy('/run_ar_follower', markerFollower)
 		#self.mbn_client = actionlib.SimpleActionClient("markerbasednav TODO", MoveBaseAction) # TODO TODO MoveBaseAction
 		#self.mbn_client.wait_for_server()
 		print "initialized move_to_area"
@@ -84,12 +88,18 @@ class move_to_area(smach.State):
 		if cmdresult == 'failed':
 			return 'failed'
 
-		print "waiting for joy"
-		self.cb.reset
-		while not self.cb.notified:
-			rospy.sleep(0.1)
-		print "joy!"
+		print "waiting for joy/starting markerfollow"
+		#self.cb.reset
+		#while not self.cb.notified:
+		#	rospy.sleep(0.1)
+		#print "joy!"
+		try:
+			result = self.arproxy(markerchain.list.markersIDs)
+			print "got result from arproxy %s" % (result,)
+		except rospy.ServiceException, e:
+			print "Failed to call arproxy %s" % (e,)
 
+		print "goto final pose"
 		cmdresult = self.command_move_base_blocking(finalpose)
 		if cmdresult == 'failed':
 			return 'failed'
