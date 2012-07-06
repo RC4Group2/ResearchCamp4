@@ -39,7 +39,7 @@ def main():
     SM = smach.StateMachine(outcomes=['overall_failed'])
     
     # world knowledge
-    SM.userdata.waittime = 2.0
+    SM.userdata.waittime = 5.0
     SM.userdata.area_to_approach = 0; 
 			# name of marker
 		        # x, y, z, roll, pitch, yaw
